@@ -2,9 +2,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<div id="header" class="span12">
+<div id="header">
 	<div id="title">
-	    <h1>QuickStart示例<small>--TodoList应用演示</small>
+	    <h1><a href="${ctx}">QuickStart示例</a><small>--TodoList应用演示</small>
 	    <shiro:user>
 			<div class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -17,6 +17,7 @@
 						<li><a href="${ctx}/admin/user">Admin Users</a></li>
 						<li class="divider"></li>
 					</shiro:hasRole>
+					<li><a href="${ctx}/api">APIs</a></li>
 					<li><a href="${ctx}/profile">Edit Profile</a></li>
 					<li><a href="${ctx}/logout">Logout</a></li>
 				</ul>

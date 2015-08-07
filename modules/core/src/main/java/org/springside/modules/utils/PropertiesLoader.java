@@ -1,10 +1,8 @@
-/**
- * Copyright (c) 2005-2011 springside.org.cn
+/*******************************************************************************
+ * Copyright (c) 2005, 2014 springside.github.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
- * 
- * $Id: PropertiesLoader.java 1690 2012-02-22 13:42:00Z calvinxiu $
- */
+ *******************************************************************************/
 package org.springside.modules.utils;
 
 import java.io.IOException;
@@ -135,7 +133,7 @@ public class PropertiesLoader {
 
 		for (String location : resourcesPaths) {
 
-			logger.debug("Loading properties file from:" + location);
+			logger.debug("Loading properties file from path:{}", location);
 
 			InputStream is = null;
 			try {
@@ -143,7 +141,7 @@ public class PropertiesLoader {
 				is = resource.getInputStream();
 				props.load(is);
 			} catch (IOException ex) {
-				logger.info("Could not load properties from path:" + location + ", " + ex.getMessage());
+				logger.info("Could not load properties from path:{}, {} ", location, ex.getMessage());
 			} finally {
 				IOUtils.closeQuietly(is);
 			}

@@ -1,6 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2014 springside.github.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *******************************************************************************/
 package org.springside.examples.showcase.functional.soap;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -13,11 +18,11 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springside.examples.showcase.data.UserData;
 import org.springside.examples.showcase.entity.User;
 import org.springside.examples.showcase.functional.BaseFunctionalTestCase;
-import org.springside.examples.showcase.webservice.soap.AccountWebService;
-import org.springside.examples.showcase.webservice.soap.response.GetUserResponse;
-import org.springside.examples.showcase.webservice.soap.response.SearchUserResponse;
-import org.springside.examples.showcase.webservice.soap.response.base.IdResponse;
-import org.springside.examples.showcase.webservice.soap.response.base.WSResponse;
+import org.springside.examples.showcase.webservice.soap.AccountSoapService;
+import org.springside.examples.showcase.webservice.soap.response.GetUserResult;
+import org.springside.examples.showcase.webservice.soap.response.SearchUserResult;
+import org.springside.examples.showcase.webservice.soap.response.base.IdResult;
+import org.springside.examples.showcase.webservice.soap.response.base.WSResult;
 import org.springside.examples.showcase.webservice.soap.response.dto.UserDTO;
 import org.springside.modules.mapper.BeanMapper;
 import org.springside.modules.test.category.Smoke;
@@ -37,7 +42,7 @@ import org.springside.modules.test.category.Smoke;
 public class AccountWebServiceWithPredefineClientFT extends BaseFunctionalTestCase {
 
 	@Autowired
-	private AccountWebService accountWebServiceClient;
+	private AccountSoapService accountWebServiceClient;
 
 	/**
 	 * 测试获取用户.
@@ -45,8 +50,8 @@ public class AccountWebServiceWithPredefineClientFT extends BaseFunctionalTestCa
 	@Test
 	@Category(Smoke.class)
 	public void getUser() {
-		GetUserResponse response = accountWebServiceClient.getUser(1L);
-		assertEquals("admin", response.getUser().getLoginName());
+		GetUserResult response = accountWebServiceClient.getUser(1L);
+		assertThat(response.getUser().getLoginName()).isEqualTo("admin");
 	}
 
 	/**
@@ -54,11 +59,10 @@ public class AccountWebServiceWithPredefineClientFT extends BaseFunctionalTestCa
 	 */
 	@Test
 	public void searchUser() {
+		SearchUserResult response = accountWebServiceClient.searchUser(null, null);
 
-		SearchUserResponse response = accountWebServiceClient.searchUser(null, null);
-
-		assertTrue(response.getUserList().size() >= 4);
-		assertEquals("Admin", response.getUserList().get(0).getName());
+		assertThat(response.getUserList().size() >= 4).isTrue();
+		assertThat(response.getUserList().get(0).getName()).isEqualTo("管理员");
 	}
 
 	/**
@@ -69,10 +73,10 @@ public class AccountWebServiceWithPredefineClientFT extends BaseFunctionalTestCa
 		User user = UserData.randomUser();
 		UserDTO userDTO = BeanMapper.map(user, UserDTO.class);
 
-		IdResponse response = accountWebServiceClient.createUser(userDTO);
-		assertNotNull(response.getId());
-		GetUserResponse response2 = accountWebServiceClient.getUser(response.getId());
-		assertEquals(user.getLoginName(), response2.getUser().getLoginName());
+		IdResult response = accountWebServiceClient.createUser(userDTO);
+		assertThat(response.getId()).isNotNull();
+		GetUserResult response2 = accountWebServiceClient.getUser(response.getId());
+		assertThat(response2.getUser().getLoginName()).isEqualTo(user.getLoginName());
 	}
 
 	/**
@@ -83,14 +87,14 @@ public class AccountWebServiceWithPredefineClientFT extends BaseFunctionalTestCa
 		User user = UserData.randomUser();
 		UserDTO userDTO = BeanMapper.map(user, UserDTO.class);
 
-		//登录名为空
+		// 登录名为空
 		userDTO.setLoginName(null);
-		IdResponse response = accountWebServiceClient.createUser(userDTO);
-		assertEquals(WSResponse.PARAMETER_ERROR, response.getCode());
+		IdResult response = accountWebServiceClient.createUser(userDTO);
+		assertThat(response.getCode()).isEqualTo(WSResult.PARAMETER_ERROR);
 
-		//登录名重复
+		// 登录名重复
 		userDTO.setLoginName("user");
 		response = accountWebServiceClient.createUser(userDTO);
-		assertEquals(WSResponse.PARAMETER_ERROR, response.getCode());
+		assertThat(response.getCode()).isEqualTo(WSResult.PARAMETER_ERROR);
 	}
 }

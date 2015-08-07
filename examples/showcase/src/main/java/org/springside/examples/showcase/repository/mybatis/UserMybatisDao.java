@@ -1,3 +1,8 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2014 springside.github.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *******************************************************************************/
 package org.springside.examples.showcase.repository.mybatis;
 
 import java.util.List;
@@ -14,12 +19,11 @@ import org.springside.examples.showcase.entity.User;
 @MyBatisRepository
 public interface UserMybatisDao {
 
-	public User get(Long id);
+	User get(Long id);
 
-	public List<User> search(Map<String, Object> parameters);
+	List<User> search(Map<String, Object> parameters);
 
-	public void save(User user);
+	void save(User user);
 
-	public void delete(Long id);
-
+	void delete(Long id);
 }

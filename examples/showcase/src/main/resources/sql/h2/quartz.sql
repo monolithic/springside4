@@ -8,20 +8,21 @@
 -- In your Quartz properties file, you'll need to set 
 -- org.quartz.jobStore.driverDelegateClass = org.quartz.impl.jdbcjobstore.StdJDBCDelegate
 
-DROP TABLE QRTZ_LOCKS IF EXISTS;
-DROP TABLE QRTZ_SCHEDULER_STATE IF EXISTS;
-DROP TABLE QRTZ_FIRED_TRIGGERS IF EXISTS;
-DROP TABLE QRTZ_PAUSED_TRIGGER_GRPS IF EXISTS;
-DROP TABLE QRTZ_CALENDARS IF EXISTS;
-DROP TABLE QRTZ_TRIGGER_LISTENERS IF EXISTS;
-DROP TABLE QRTZ_BLOB_TRIGGERS IF EXISTS;
-DROP TABLE QRTZ_CRON_TRIGGERS IF EXISTS;
-DROP TABLE QRTZ_SIMPLE_TRIGGERS IF EXISTS;
-DROP TABLE QRTZ_TRIGGERS IF EXISTS;
-DROP TABLE QRTZ_JOB_LISTENERS IF EXISTS;
-DROP TABLE QRTZ_JOB_DETAILS IF EXISTS;
-DROP TABLE qrtz_simprop_triggers IF EXISTS;
-DROP TABLE QRTZ_BLOB_TRIGGERS IF EXISTS;
+drop table qrtz_locks if exists;
+drop table qrtz_scheduler_state if exists;
+drop table qrtz_fired_triggers if exists;
+drop table qrtz_paused_trigger_grps if exists;
+drop table qrtz_calendars if exists;
+drop table qrtz_trigger_listeners if exists;
+drop table qrtz_blob_triggers if exists;
+drop table qrtz_cron_triggers if exists;
+drop table qrtz_simple_triggers if exists;
+drop table qrtz_triggers if exists;
+drop table qrtz_job_listeners if exists;
+drop table qrtz_job_details if exists;
+drop table qrtz_simprop_triggers if exists;
+drop table qrtz_blob_triggers if exists;
+
 
 CREATE TABLE QRTZ_CALENDARS (
   SCHED_NAME VARCHAR(120) NOT NULL,
@@ -44,6 +45,7 @@ CREATE TABLE QRTZ_FIRED_TRIGGERS (
   TRIGGER_GROUP VARCHAR (200)  NOT NULL ,
   INSTANCE_NAME VARCHAR (200)  NOT NULL ,
   FIRED_TIME BIGINT NOT NULL ,
+  SCHED_TIME BIGINT NOT NULL ,
   PRIORITY INTEGER NOT NULL ,
   STATE VARCHAR (16)  NOT NULL,
   JOB_NAME VARCHAR (200)  NULL ,

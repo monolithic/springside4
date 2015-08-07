@@ -1,7 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2014 springside.github.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *******************************************************************************/
 package org.springside.examples.quickstart.web.task;
 
 import java.util.Map;
 
+import javax.servlet.ServletRequest;
 import javax.validation.Valid;
 
 import org.apache.shiro.SecurityUtils;
@@ -19,18 +25,19 @@ import org.springside.examples.quickstart.entity.Task;
 import org.springside.examples.quickstart.entity.User;
 import org.springside.examples.quickstart.service.account.ShiroDbRealm.ShiroUser;
 import org.springside.examples.quickstart.service.task.TaskService;
+import org.springside.modules.web.Servlets;
 
 import com.google.common.collect.Maps;
 
 /**
  * Task管理的Controller, 使用Restful风格的Urls:
  * 
- * List   page    : GET  /task/
- * Create page    : GET  /task/create
- * Create action  : POST /task/create
- * Update page    : GET  /task/update/{id}
- * Update action  : POST /task/update
- * Delete action  : GET /task/delete/{id}
+ * List page : GET /task/
+ * Create page : GET /task/create
+ * Create action : POST /task/create
+ * Update page : GET /task/update/{id}
+ * Update action : POST /task/update
+ * Delete action : GET /task/delete/{id}
  * 
  * @author calvin
  */
@@ -38,10 +45,7 @@ import com.google.common.collect.Maps;
 @RequestMapping(value = "/task")
 public class TaskController {
 
-	@Autowired
-	private TaskService taskService;
-
-	private static final int PAGE_SIZE = 3;
+	private static final String PAGE_SIZE = "3";
 
 	private static Map<String, String> sortTypes = Maps.newLinkedHashMap();
 	static {
@@ -49,15 +53,24 @@ public class TaskController {
 		sortTypes.put("title", "标题");
 	}
 
-	@RequestMapping(method = RequestMethod.GET)
-	public String list(@RequestParam(value = "sortType", defaultValue = "auto") String sortType,
-			@RequestParam(value = "page", defaultValue = "1") int pageNumber, Model model) {
-		Long userId = getCurrentUserId();
-		Page<Task> tasks = taskService.getUserTask(userId, pageNumber, PAGE_SIZE, sortType);
-		model.addAttribute("tasks", tasks);
+	@Autowired
+	private TaskService taskService;
 
+	@RequestMapping(method = RequestMethod.GET)
+	public String list(@RequestParam(value = "page", defaultValue = "1") int pageNumber,
+			@RequestParam(value = "page.size", defaultValue = PAGE_SIZE) int pageSize,
+			@RequestParam(value = "sortType", defaultValue = "auto") String sortType, Model model,
+			ServletRequest request) {
+		Map<String, Object> searchParams = Servlets.getParametersStartingWith(request, "search_");
+		Long userId = getCurrentUserId();
+
+		Page<Task> tasks = taskService.getUserTask(userId, searchParams, pageNumber, pageSize, sortType);
+
+		model.addAttribute("tasks", tasks);
 		model.addAttribute("sortType", sortType);
 		model.addAttribute("sortTypes", sortTypes);
+		// 将搜索条件编码成字符串，用于排序，分页的URL
+		model.addAttribute("searchParams", Servlets.encodeParameterStringWithPrefix(searchParams, "search_"));
 
 		return "task/taskList";
 	}
@@ -87,7 +100,7 @@ public class TaskController {
 	}
 
 	@RequestMapping(value = "update", method = RequestMethod.POST)
-	public String update(@Valid @ModelAttribute("preloadTask") Task task, RedirectAttributes redirectAttributes) {
+	public String update(@Valid @ModelAttribute("task") Task task, RedirectAttributes redirectAttributes) {
 		taskService.saveTask(task);
 		redirectAttributes.addFlashAttribute("message", "更新任务成功");
 		return "redirect:/task/";
@@ -101,15 +114,14 @@ public class TaskController {
 	}
 
 	/**
-	 * 使用@ModelAttribute, 实现Struts2 Preparable二次部分绑定的效果,先根据form的id从数据库查出Task对象,再把Form提交的内容绑定到该对象上。
-	 * 因为仅update()方法的form中有id属性，因此本方法在该方法中执行.
+	 * 所有RequestMapping方法调用前的Model准备方法, 实现Struts2 Preparable二次部分绑定的效果,先根据form的id从数据库查出Task对象,再把Form提交的内容绑定到该对象上。
+	 * 因为仅update()方法的form中有id属性，因此仅在update时实际执行.
 	 */
-	@ModelAttribute("preloadTask")
-	public Task getTask(@RequestParam(value = "id", required = false) Long id) {
-		if (id != null) {
-			return taskService.getTask(id);
+	@ModelAttribute
+	public void getTask(@RequestParam(value = "id", defaultValue = "-1") Long id, Model model) {
+		if (id != -1) {
+			model.addAttribute("task", taskService.getTask(id));
 		}
-		return null;
 	}
 
 	/**

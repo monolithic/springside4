@@ -1,6 +1,11 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2014 springside.github.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *******************************************************************************/
 package org.springside.examples.showcase.functional.soap;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import javax.xml.ws.BindingProvider;
 
@@ -12,8 +17,8 @@ import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springside.examples.showcase.functional.BaseFunctionalTestCase;
-import org.springside.examples.showcase.webservice.soap.AccountWebService;
-import org.springside.examples.showcase.webservice.soap.response.GetTeamDetailResponse;
+import org.springside.examples.showcase.webservice.soap.AccountSoapService;
+import org.springside.examples.showcase.webservice.soap.response.GetTeamDetailResult;
 import org.springside.modules.test.category.Smoke;
 
 /**
@@ -27,19 +32,19 @@ import org.springside.modules.test.category.Smoke;
  */
 public class AccountWebServiceWithDynamicCreateClientFT extends BaseFunctionalTestCase {
 
-	public AccountWebService creatClient() {
-		String address = baseUrl + "/soap/accountservice";
+	public AccountSoapService creatClient() {
+		String address = baseUrl + "/cxf/soap/accountservice";
 
 		JaxWsProxyFactoryBean proxyFactory = new JaxWsProxyFactoryBean();
 		proxyFactory.setAddress(address);
-		proxyFactory.setServiceClass(AccountWebService.class);
-		AccountWebService accountWebServiceProxy = (AccountWebService) proxyFactory.create();
+		proxyFactory.setServiceClass(AccountSoapService.class);
+		AccountSoapService accountWebServiceProxy = (AccountSoapService) proxyFactory.create();
 
-		//(可选)演示重新设定endpoint address.
+		// (可选)演示重新设定endpoint address.
 		((BindingProvider) accountWebServiceProxy).getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
 				address);
 
-		//(可选)演示重新设定Timeout时间
+		// (可选)演示重新设定Timeout时间
 		Client client = ClientProxy.getClient(accountWebServiceProxy);
 		HTTPConduit conduit = (HTTPConduit) client.getConduit();
 		HTTPClientPolicy policy = conduit.getClient();
@@ -54,11 +59,10 @@ public class AccountWebServiceWithDynamicCreateClientFT extends BaseFunctionalTe
 	@Test
 	@Category(Smoke.class)
 	public void getTeamDetail() {
-		AccountWebService accountWebService = creatClient();
+		AccountSoapService accountWebService = creatClient();
 
-		GetTeamDetailResponse response = accountWebService.getTeamDetail(1L);
-		assertEquals("Dolphin", response.getTeam().getName());
-		assertEquals("Admin", response.getTeam().getMaster().getName());
+		GetTeamDetailResult result = accountWebService.getTeamDetail(1L);
+		assertThat(result.getTeam().getName()).isEqualTo("Dolphin");
+		assertThat(result.getTeam().getMaster().getName()).isEqualTo("管理员");
 	}
-
 }

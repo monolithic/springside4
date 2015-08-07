@@ -1,3 +1,8 @@
+/*******************************************************************************
+ * Copyright (c) 2005, 2014 springside.github.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *******************************************************************************/
 package org.springside.modules.security.shiro;
 
 import org.apache.shiro.subject.Subject;
@@ -10,6 +15,7 @@ import org.apache.shiro.web.tags.PermissionTag;
  */
 public class HasAnyPermissionsTag extends PermissionTag {
 
+	private static final long serialVersionUID = -4786931833148680306L;
 	private static final String PERMISSION_NAMES_DELIMETER = ",";
 
 	@Override

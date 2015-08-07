@@ -1,18 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
+
 <html>
 <head>
 	<title>资料修改</title>
-	
-	<script>
-		$(document).ready(function() {
-			//聚焦第一个输入框
-			$("#name").focus();
-			//为inputForm注册validate函数
-			$("#inputForm").validate();
-		});
-	</script>
 </head>
 
 <body>
@@ -44,5 +36,14 @@
 			</div>
 		</fieldset>
 	</form>
+	
+	<script>
+		$(document).ready(function() {
+			//聚焦第一个输入框
+			$("#name").focus();
+			//为inputForm注册validate函数
+			$("#inputForm").validate();
+		});
+	</script>
 </body>
 </html>
